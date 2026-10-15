@@ -278,7 +278,7 @@ function portada() {
   texto($("p-curso"), EX.curso); texto($("p-titulo"), EX.titulo);
   var n = EX.escenarios.length;
   var t = n + " preguntas · " + EX.duracion_min + " minutos desde que pulse Empezar";
-  if (EX.cierre) t += " · cierra a las " + hora(EX.cierre) + " aunque no haya terminado";
+  if (EX.cierre) t += " · cierra el " + fecha(EX.cierre) + " aunque no haya terminado";
   texto($("p-datos"), t);
   ver("v-portada");
 }
