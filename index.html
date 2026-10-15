@@ -1,0 +1,444 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Examen</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icono-192.png">
+<link rel="apple-touch-icon" href="icono-180.png">
+<meta name="theme-color" content="#0c1f19">
+<style>
+/* Paleta por defecto (MED 550); el examen la reemplaza con la de su curso al abrirse */
+:root{--bg:#0c1f19;--panel:#122b23;--panel2:#183a2f;--ink:#eef4f0;--muted:#a6bdb3;--acc:#c9a227;--acc2:#45d6a4;--alert:#ff7a6b;--line:#24493c;
+--serif:Georgia,"Times New Roman",serif;--sans:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color-scheme:dark}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:17px;line-height:1.55;-webkit-text-size-adjust:100%}
+.wrap{max-width:760px;margin:0 auto;padding:20px 16px 96px}
+h1,h2{font-family:var(--serif);font-weight:600;line-height:1.25;text-wrap:balance}
+h1{font-size:1.6rem;margin:8px 0 4px}
+h2{font-size:1.25rem;margin:0 0 10px}
+.cint{font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;color:var(--acc);margin:0}
+.muted{color:var(--muted)}
+.regla{height:2px;width:72px;background:var(--acc);border:0;margin:14px 0 18px}
+.tarjeta{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 16px;margin:14px 0}
+label.campo{display:block;font-weight:600;margin:0 0 6px}
+input[type=password],input[type=text]{width:100%;font:inherit;font-size:1.05rem;padding:12px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
+button{font:inherit;cursor:pointer;border-radius:8px;border:1px solid var(--line);background:var(--panel2);color:var(--ink);padding:12px 16px;min-height:48px}
+button.pri{background:var(--acc);border-color:var(--acc);color:var(--bg);font-weight:700}
+button:disabled{opacity:.5;cursor:default}
+button:focus-visible,input:focus-visible{outline:3px solid var(--acc2);outline-offset:2px}
+.fila{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
+.error{color:var(--alert);font-weight:600;margin:10px 0 0;min-height:1.2em}
+ul.reglas{padding-left:1.2rem;margin:8px 0}
+ul.reglas li{margin:6px 0}
+/* Pantalla de pregunta */
+.barra{position:sticky;top:0;z-index:5;background:var(--panel);border-bottom:1px solid var(--line);padding:10px 16px;padding-top:max(10px,env(safe-area-inset-top))}
+.barra .in{max-width:760px;margin:0 auto;display:flex;align-items:center;gap:12px}
+.barra .prog{flex:1;min-width:0}
+.barra .prog small{display:block;color:var(--muted);font-size:.85rem}
+.pista{height:6px;background:var(--bg);border-radius:3px;overflow:hidden;margin-top:4px}
+.pista i{display:block;height:100%;background:var(--acc);width:0}
+#reloj{font-variant-numeric:tabular-nums;font-weight:700;font-size:1.15rem;color:var(--acc)}
+#reloj.poco{color:var(--alert)}
+.examen{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+.vin{white-space:pre-wrap;margin:0 0 12px;max-width:72ch}
+.fig{display:block;max-width:100%;height:auto;border-radius:8px;background:#fff;margin:6px 0 14px}
+table.tab{border-collapse:collapse;margin:6px 0 14px;font-size:.92rem;display:block;overflow-x:auto}
+table.tab td,table.tab th{border:1px solid var(--line);padding:6px 8px;text-align:left}
+.enun{font-weight:700;margin:16px 0 12px;max-width:72ch}
+.ops{display:grid;gap:8px;margin:0;padding:0;list-style:none}
+.op{display:flex;gap:12px;align-items:flex-start;width:100%;text-align:left;background:var(--panel2);border:2px solid var(--line);border-radius:10px;padding:12px 14px;min-height:52px;line-height:1.4}
+.op .l{flex:0 0 1.4em;font-weight:700;color:var(--muted)}
+.op[aria-checked=true]{border-color:var(--acc);background:color-mix(in srgb,var(--acc) 18%,var(--panel2))}
+.op[aria-checked=true] .l{color:var(--acc)}
+.pie{position:fixed;left:0;right:0;bottom:0;background:var(--panel);border-top:1px solid var(--line);padding:10px 16px;padding-bottom:max(10px,env(safe-area-inset-bottom))}
+.pie .in{max-width:760px;margin:0 auto;display:flex;gap:10px;justify-content:flex-end}
+.pie button{flex:1;max-width:340px}
+textarea#codigo{width:100%;min-height:150px;font-family:ui-monospace,Consolas,monospace;font-size:.8rem;word-break:break-all;padding:10px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);-webkit-user-select:text;user-select:text}
+.ok{color:var(--ink);font-weight:700}
+.aviso{border-left:4px solid var(--acc);padding:4px 0 4px 12px;margin:12px 0}
+[hidden]{display:none!important}
+dialog{background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:12px;max-width:min(92vw,440px);padding:18px}
+dialog::backdrop{background:rgba(0,0,0,.6)}
+</style>
+</head>
+<body>
+
+<!-- 1. Clave -->
+<section id="v-clave" class="wrap" hidden>
+  <p class="cint" id="c-curso">Examen</p>
+  <h1 id="c-titulo">Examen en línea</h1>
+  <hr class="regla">
+  <div class="tarjeta">
+    <form id="f-clave" autocomplete="off">
+      <label class="campo" for="clave">Clave del examen</label>
+      <input id="clave" type="text" autocapitalize="none" autocorrect="off" spellcheck="false" inputmode="text" placeholder="La que el profesor da en el aula">
+      <div class="fila"><button class="pri" id="b-abrir" type="submit">Abrir el examen</button></div>
+      <p class="error" id="e-clave" role="alert"></p>
+    </form>
+  </div>
+  <p class="muted">Escríbala tal como se la dictan, con espacios entre las palabras. Mayúsculas y tildes no importan.</p>
+</section>
+
+<!-- Sin examen publicado -->
+<section id="v-vacio" class="wrap" hidden>
+  <p class="cint">Examen en línea</p>
+  <h1>No hay ningún examen abierto en este momento</h1>
+  <hr class="regla">
+  <p>Esta página no trae preguntas por sí sola. El profesor la carga el día del examen y le da la clave en el aula.</p>
+  <p class="muted">Si ya le dieron la clave y ve este mensaje, actualice la página. Si sigue igual, avísele al profesor.</p>
+</section>
+
+<!-- 2. Portada -->
+<section id="v-portada" class="wrap" hidden>
+  <p class="cint" id="p-curso"></p>
+  <h1 id="p-titulo"></h1>
+  <hr class="regla">
+  <div class="tarjeta">
+    <p id="p-datos"></p>
+    <ul class="reglas">
+      <li><b>Una pregunta por pantalla.</b> Al confirmar una respuesta pasa a la siguiente y <b>no puede volver</b>.</li>
+      <li>Cada estudiante recibe las preguntas y las opciones en un orden distinto.</li>
+      <li><b>No salga de esta página</b> hasta terminar. Cada salida, a otra aplicación, a otra pestaña o a la pantalla de inicio, queda registrada con su hora, su duración y la pregunta en la que iba.</li>
+      <li>Si se le va la señal, siga contestando: el examen funciona sin internet.</li>
+      <li>Si el teléfono se apaga o la página se cierra, vuelva a abrirla: retoma donde iba y el reloj sigue corriendo.</li>
+      <li>Al terminar le aparece un <b>código</b>. Cópielo y péguelo en la tarea del aula. Sin ese código su examen no llega.</li>
+    </ul>
+  </div>
+  <div class="fila"><button class="pri" id="b-empezar" type="button">Empezar el examen</button></div>
+</section>
+
+<!-- 3. Pregunta -->
+<section id="v-pregunta" hidden>
+  <div class="barra"><div class="in">
+    <div class="prog"><b id="q-num"></b><small id="q-bloque"></small><div class="pista"><i id="q-pista"></i></div></div>
+    <div id="reloj" aria-live="off"></div>
+  </div></div>
+  <div class="wrap examen" id="q-cuerpo">
+    <h2 id="q-titulo"></h2>
+    <div class="vin" id="q-vineta"></div>
+    <div id="q-extra"></div>
+    <p class="enun" id="q-enun"></p>
+    <div class="ops" id="q-ops" role="radiogroup" aria-labelledby="q-enun"></div>
+  </div>
+  <div class="pie"><div class="in"><button class="pri" id="b-seguir" type="button">Confirmar y seguir</button></div></div>
+</section>
+
+<!-- 4. Fin -->
+<section id="v-fin" class="wrap" hidden>
+  <p class="cint" id="z-curso"></p>
+  <h1>Examen terminado</h1>
+  <hr class="regla">
+  <p id="z-motivo"></p>
+  <div class="tarjeta">
+    <label class="campo" for="codigo">Su código de respuestas</label>
+    <textarea id="codigo" readonly></textarea>
+    <div class="fila">
+      <button class="pri" id="b-copiar" type="button">Copiar el código</button>
+      <button id="b-bajar" type="button">Descargarlo como archivo</button>
+    </div>
+    <p id="z-copiado" class="ok" role="status"></p>
+  </div>
+  <div class="aviso">
+    <p><b>Ahora péguelo en el aula</b>, en la tarea <span id="z-tarea">de entrega de este examen</span>, y guarde los cambios. Hasta que lo pegue, su examen no ha llegado.</p>
+    <p id="z-enlace" hidden><a id="z-a" href="#" target="_blank" rel="noopener">Abrir la tarea en el aula</a></p>
+  </div>
+  <p class="muted">El código va cifrado: solo el profesor lo puede abrir. No muestra sus respuestas ni su nota. Si cierra esta página, al volver a abrirla el código sigue aquí.</p>
+</section>
+
+<dialog id="dlg">
+  <p id="dlg-txt"></p>
+  <div class="fila"><button id="dlg-no" type="button">Volver</button><button class="pri" id="dlg-si" type="button">Sí, seguir</button></div>
+</dialog>
+
+<script>
+"use strict";
+var VERSION = "1.0.0";
+var PARAM = new URLSearchParams(location.search);
+var ARCHIVO = (PARAM.get("e") || "examen").replace(/[^a-z0-9_-]/gi, "") + ".cifrado.json";
+var enc = new TextEncoder(), dec = new TextDecoder();
+var $ = function (id) { return document.getElementById(id); };
+var PAQ = null, EX = null, ST = null, KEY = null, reloj = null;
+
+/* ---------- utilidades ---------- */
+function b64aBytes(s) { s = s.replace(/-/g, "+").replace(/_/g, "/"); while (s.length % 4) s += "="; var b = atob(s), u = new Uint8Array(b.length); for (var i = 0; i < b.length; i++) u[i] = b.charCodeAt(i); return u; }
+function bytesAb64url(u) { var s = "", i, CH = 0x8000; for (i = 0; i < u.length; i += CH) s += String.fromCharCode.apply(null, u.subarray(i, i + CH)); return btoa(s).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, ""); }
+function normalizarClave(s) { return s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/[^a-z0-9ñ]+/g, " ").trim(); }
+function azar(n) { var a = new Uint32Array(1); crypto.getRandomValues(a); return a[0] % n; }
+function barajar(arr) { arr = arr.slice(); for (var i = arr.length - 1; i > 0; i--) { var j = azar(i + 1), t = arr[i]; arr[i] = arr[j]; arr[j] = t; } return arr; }
+function hex(u) { return Array.prototype.map.call(u, function (b) { return ("0" + b.toString(16)).slice(-2); }).join(""); }
+function ahora() { return Date.now(); }
+function hora(ms) { return new Date(ms).toLocaleTimeString("es-PA", { hour: "numeric", minute: "2-digit" }); }
+function fecha(ms) { return new Date(ms).toLocaleString("es-PA", { weekday: "long", day: "numeric", month: "long", hour: "numeric", minute: "2-digit" }); }
+function ver(id) { ["v-clave", "v-vacio", "v-portada", "v-pregunta", "v-fin"].forEach(function (v) { $(v).hidden = v !== id; }); window.scrollTo(0, 0); }
+function guardar() { try { localStorage.setItem(KEY, JSON.stringify(ST)); } catch (e) {} }
+function leer(k) { try { return JSON.parse(localStorage.getItem(k) || "null"); } catch (e) { return null; } }
+function texto(el, t) { el.textContent = t == null ? "" : t; }
+function confirmar(msg) {
+  return new Promise(function (ok) {
+    var d = $("dlg"); texto($("dlg-txt"), msg);
+    function fin(v) { d.close(); $("dlg-si").onclick = $("dlg-no").onclick = null; ok(v); }
+    $("dlg-si").onclick = function () { fin(true); }; $("dlg-no").onclick = function () { fin(false); };
+    if (d.showModal) d.showModal(); else ok(window.confirm(msg));
+  });
+}
+
+/* ---------- paleta del curso ---------- */
+function aplicarPaleta(p) {
+  if (!p) return;
+  var r = document.documentElement.style;
+  Object.keys(p).forEach(function (k) { if (/^[a-z0-9]+$/.test(k) && /^#[0-9a-f]{3,8}$/i.test(p[k])) r.setProperty("--" + k, p[k]); });
+  var m = document.querySelector('meta[name=theme-color]'); if (p.bg) m.setAttribute("content", p.bg);
+}
+
+/* ---------- registro de eventos ---------- */
+function reg(tipo, extra) {
+  if (!ST || ST.fin) return;
+  var e = [ahora() - ST.inicio, tipo, ST.pos];
+  if (extra != null) e.push(extra);
+  ST.ev.push(e);
+  if (ST.ev.length > 3000) ST.ev.splice(1000, 1000, [ahora() - ST.inicio, "recortado", ST.pos]);
+  guardar();
+}
+var oculto = null, desenfoque = null;
+document.addEventListener("visibilitychange", function () {
+  if (!ST || ST.fin || !ST.inicio) return;
+  if (document.visibilityState === "hidden") { oculto = ahora(); reg("sale"); }
+  else { reg("vuelve", oculto ? ahora() - oculto : null); oculto = null; tick(); }
+});
+window.addEventListener("blur", function () { if (ST && !ST.fin && ST.inicio && document.visibilityState === "visible") { desenfoque = ahora(); reg("desenfoque"); } });
+window.addEventListener("focus", function () { if (ST && !ST.fin && ST.inicio && desenfoque) { reg("enfoque", ahora() - desenfoque); desenfoque = null; } });
+window.addEventListener("pagehide", function () { if (ST && !ST.fin && ST.inicio) reg("cierra"); });
+window.addEventListener("online", function () { reg("en_linea"); });
+window.addEventListener("offline", function () { reg("sin_conexion"); });
+["copy", "cut"].forEach(function (t) { document.addEventListener(t, function (ev) { if (ST && !ST.fin && ST.inicio && !$("v-pregunta").hidden) { reg("copia"); ev.preventDefault(); } }); });
+document.addEventListener("paste", function () { reg("pega"); });
+document.addEventListener("contextmenu", function (ev) { if (ST && !ST.fin && !$("v-pregunta").hidden) { reg("menu"); ev.preventDefault(); } });
+document.addEventListener("fullscreenchange", function () { reg(document.fullscreenElement ? "pantalla_completa" : "sale_pantalla_completa"); });
+window.addEventListener("resize", function () { if (ST && !ST.fin && ST.inicio && !$("v-pregunta").hidden) { clearTimeout(window.__rz); window.__rz = setTimeout(function () { reg("tamano", innerWidth + "x" + innerHeight); }, 400); } });
+var canal = null;
+try {
+  canal = new BroadcastChannel("examen-nazas");
+  canal.onmessage = function (m) { if (m.data && ST && m.data.ex === ST.ex && m.data.int !== ST.intento && !ST.fin) reg("otra_pestana"); };
+} catch (e) {}
+
+/* ---------- carga del paquete ---------- */
+async function cargar() {
+  var r;
+  try { r = await fetch(ARCHIVO, { cache: "no-cache" }); } catch (e) { r = null; }
+  if (r && r.ok) { try { PAQ = await r.json(); } catch (e) { PAQ = null; } }
+  if (!PAQ) {
+    /* Sin examen publicado: si este equipo ya terminó uno, se le vuelve a mostrar su código */
+    var ult = null; try { ult = localStorage.getItem("examen:ultimo"); } catch (e) {}
+    var previo = ult ? leer(ult) : null;
+    if (previo && previo.codigo && previo.meta) { ST = previo; PAQ = previo.meta; mostrarFin(); return; }
+    ver("v-vacio"); return;
+  }
+  KEY = "examen:" + PAQ.id;
+  aplicarPaleta(PAQ.paleta);
+  texto($("c-curso"), PAQ.curso || "Examen"); texto($("c-titulo"), PAQ.titulo || "Examen en línea");
+  document.title = (PAQ.titulo || "Examen");
+  ST = leer(KEY);
+  var clave = null; try { clave = sessionStorage.getItem(KEY + ":c"); } catch (e) {}
+  if (ST && ST.codigo) { mostrarFin(); return; }
+  if (ST && clave) { if (await abrir(clave, true)) return; }
+  ver("v-clave");
+}
+
+async function abrir(clave, silencioso) {
+  var c = normalizarClave(clave);
+  try {
+    var base = await crypto.subtle.importKey("raw", enc.encode(c), "PBKDF2", false, ["deriveKey"]);
+    var k = await crypto.subtle.deriveKey({ name: "PBKDF2", salt: b64aBytes(PAQ.sal), iterations: PAQ.iter, hash: "SHA-256" }, base, { name: "AES-GCM", length: 256 }, false, ["decrypt"]);
+    var plano = await crypto.subtle.decrypt({ name: "AES-GCM", iv: b64aBytes(PAQ.iv) }, k, b64aBytes(PAQ.datos));
+    EX = JSON.parse(dec.decode(plano));
+  } catch (e) {
+    if (!silencioso) texto($("e-clave"), "Esa clave no abre este examen. Revísela y vuelva a intentarlo.");
+    return false;
+  }
+  try { sessionStorage.setItem(KEY + ":c", clave); } catch (e) {}
+  aplicarPaleta(EX.paleta);
+  if (ST && ST.ex === EX.id && ST.inicio) {
+    ST.recargas = (ST.recargas || 0) + 1; ST.ev.push([ahora() - ST.inicio, "reabre", ST.pos]); guardar();
+    avisarCanal();
+    if (ST.fin) { await terminar(ST.fin_motivo || "entregado"); return true; }
+    mostrarPregunta(); return true;
+  }
+  if (EX.cierre && ahora() > EX.cierre) {
+    texto($("e-clave"), "El examen cerró el " + fecha(EX.cierre) + ".");
+    ver("v-clave"); return true;
+  }
+  portada(); return true;
+}
+
+function portada() {
+  texto($("p-curso"), EX.curso); texto($("p-titulo"), EX.titulo);
+  var n = EX.escenarios.length;
+  var t = n + " preguntas · " + EX.duracion_min + " minutos desde que pulse Empezar";
+  if (EX.cierre) t += " · cierra a las " + hora(EX.cierre) + " aunque no haya terminado";
+  texto($("p-datos"), t);
+  ver("v-portada");
+}
+
+function avisarCanal() { try { canal && canal.postMessage({ ex: ST.ex, int: ST.intento }); } catch (e) {} }
+
+/* ---------- intento ---------- */
+function crearIntento() {
+  var id = new Uint8Array(8); crypto.getRandomValues(id);
+  var escs = EX.barajar_preguntas === false ? EX.escenarios.slice() : barajar(EX.escenarios);
+  var orden = escs.map(function (e) {
+    var v = e.variantes[azar(e.variantes.length)];
+    var perm = EX.barajar_opciones === false ? v.opciones.map(function (_, i) { return i; }) : barajar(v.opciones.map(function (_, i) { return i; }));
+    return { e: e.id, v: v.id, p: perm };
+  });
+  ST = { ex: EX.id, intento: hex(id), inicio: ahora(), pos: 0, orden: orden, resp: {}, ev: [], recargas: 0,
+         t0: performance.now(), mostrada: ahora(), fin: null, codigo: null };
+  ST.limite = ST.inicio + EX.duracion_min * 60000;
+  if (EX.cierre && EX.cierre < ST.limite) ST.limite = EX.cierre;
+  ST.meta = { curso: PAQ.curso, titulo: PAQ.titulo, paleta: PAQ.paleta, entrega_url: PAQ.entrega_url, entrega_nombre: PAQ.entrega_nombre };
+  try { localStorage.setItem("examen:ultimo", KEY); } catch (e) {}
+  ST.ev.push([0, "empieza", 0, navigator.userAgent]);
+  guardar(); avisarCanal();
+}
+
+function buscar(o) {
+  var e = EX.escenarios.filter(function (x) { return x.id === o.e; })[0];
+  var v = e.variantes.filter(function (x) { return x.id === o.v; })[0];
+  return { e: e, v: v };
+}
+
+var elegida = null;
+function mostrarPregunta() {
+  if (ST.pos >= ST.orden.length) { terminar("entregado"); return; }
+  var o = ST.orden[ST.pos], q = buscar(o), n = ST.orden.length;
+  elegida = null;
+  texto($("q-num"), "Pregunta " + (ST.pos + 1) + " de " + n);
+  texto($("q-bloque"), q.e.bloque_nombre || "");
+  $("q-pista").style.width = (100 * ST.pos / n) + "%";
+  texto($("q-titulo"), q.e.titulo || "");
+  texto($("q-vineta"), q.e.vineta || "");
+  var x = $("q-extra"); x.innerHTML = "";
+  if (q.e.img) { var im = document.createElement("img"); im.className = "fig"; im.src = q.e.img; im.alt = "Figura del caso"; im.draggable = false; x.appendChild(im); }
+  if (Array.isArray(q.e.tabla) && q.e.tabla.length) {
+    var tb = document.createElement("table"); tb.className = "tab";
+    q.e.tabla.forEach(function (fila, i) { var tr = document.createElement("tr"); (Array.isArray(fila) ? fila : [fila]).forEach(function (c) { var td = document.createElement(i ? "td" : "th"); td.textContent = c; tr.appendChild(td); }); tb.appendChild(tr); });
+    x.appendChild(tb);
+  } else if (typeof q.e.tabla === "string" && q.e.tabla) { var pre = document.createElement("div"); pre.className = "vin"; pre.textContent = q.e.tabla; x.appendChild(pre); }
+  texto($("q-enun"), q.v.enunciado);
+  var ops = $("q-ops"); ops.innerHTML = "";
+  o.p.forEach(function (orig, i) {
+    var b = document.createElement("button"); b.type = "button"; b.className = "op"; b.setAttribute("role", "radio"); b.setAttribute("aria-checked", "false");
+    b.innerHTML = '<span class="l">' + "ABCDEFGH"[i] + '</span><span class="t"></span>';
+    b.querySelector(".t").textContent = q.v.opciones[orig];
+    b.onclick = function () { elegida = orig; Array.prototype.forEach.call(ops.children, function (c) { c.setAttribute("aria-checked", c === b ? "true" : "false"); }); actualizarBoton(); };
+    ops.appendChild(b);
+  });
+  ST.mostrada = ahora(); guardar();
+  actualizarBoton();
+  ver("v-pregunta");
+  iniciarReloj();
+}
+function actualizarBoton() { texto($("b-seguir"), elegida === null ? "Dejar en blanco y seguir" : (ST.pos + 1 === ST.orden.length ? "Confirmar y terminar" : "Confirmar y seguir")); }
+
+$("b-seguir").onclick = async function () {
+  if (elegida === null) { if (!(await confirmar("No ha elegido ninguna opción. Si sigue, esta pregunta queda en blanco y no podrá volver a ella."))) return; }
+  else if (ST.pos + 1 === ST.orden.length) { if (!(await confirmar("Es la última pregunta. Al confirmar, el examen termina y se genera su código."))) return; }
+  var o = ST.orden[ST.pos];
+  ST.resp[o.v] = [elegida, ahora() - ST.mostrada];
+  ST.pos++; guardar();
+  mostrarPregunta();
+};
+
+function iniciarReloj() { if (!reloj) reloj = setInterval(tick, 1000); tick(); }
+function tick() {
+  if (!ST || ST.fin || !ST.inicio) return;
+  var r = ST.limite - ahora();
+  if (r <= 0) { terminar(ST.limite === EX.cierre ? "cierre" : "tiempo"); return; }
+  var m = Math.floor(r / 60000), s = Math.floor(r / 1000) % 60;
+  var el = $("reloj"); texto(el, m + ":" + ("0" + s).slice(-2)); el.classList.toggle("poco", r < 5 * 60000);
+}
+
+/* ---------- cierre y cifrado de la respuesta ---------- */
+var terminando = false;
+async function terminar(motivo) {
+  if (terminando) return; terminando = true;
+  clearInterval(reloj); reloj = null;
+  if (!ST.fin) { ST.ev.push([ahora() - ST.inicio, "termina", ST.pos, motivo]); ST.fin = ahora(); ST.fin_motivo = motivo; guardar(); }
+  var carga = { v: 1, motor: VERSION, ex: EX.id, int: ST.intento, ini: ST.inicio, fin: ST.fin, mot: ST.fin_motivo,
+    rec: ST.recargas, orden: ST.orden.map(function (o) { return [o.v, o.p]; }), resp: ST.resp, ev: ST.ev,
+    ua: navigator.userAgent, pant: screen.width + "x" + screen.height };
+  try { ST.codigo = await cifrarCarga(carga); }
+  catch (e) { ST.codigo = "ERROR:" + (e && e.message || e); }
+  guardar(); terminando = false;
+  if (document.fullscreenElement) try { document.exitFullscreen(); } catch (e) {}
+  mostrarFin();
+}
+
+async function comprimir(bytes) {
+  if (typeof CompressionStream === "undefined") return { b: bytes, gz: 0 };
+  var s = new Blob([bytes]).stream().pipeThrough(new CompressionStream("gzip"));
+  return { b: new Uint8Array(await new Response(s).arrayBuffer()), gz: 1 };
+}
+async function cifrarCarga(carga) {
+  var c = await comprimir(enc.encode(JSON.stringify(carga)));
+  var plano = new Uint8Array(c.b.length + 1); plano[0] = c.gz; plano.set(c.b, 1);
+  var pub = await crypto.subtle.importKey("jwk", EX.llave, { name: "RSA-OAEP", hash: "SHA-256" }, false, ["encrypt"]);
+  var aes = await crypto.subtle.generateKey({ name: "AES-GCM", length: 256 }, true, ["encrypt"]);
+  var bruta = new Uint8Array(await crypto.subtle.exportKey("raw", aes));
+  var envuelta = new Uint8Array(await crypto.subtle.encrypt({ name: "RSA-OAEP" }, pub, bruta));
+  var iv = new Uint8Array(12); crypto.getRandomValues(iv);
+  var ct = new Uint8Array(await crypto.subtle.encrypt({ name: "AES-GCM", iv: iv }, aes, plano));
+  var todo = new Uint8Array(envuelta.length + 12 + ct.length);
+  todo.set(envuelta, 0); todo.set(iv, envuelta.length); todo.set(ct, envuelta.length + 12);
+  return "EX1." + bytesAb64url(todo);
+}
+
+function mostrarFin() {
+  var ex = EX || PAQ || {};
+  aplicarPaleta(ex.paleta);
+  texto($("z-curso"), (EX && EX.curso) || PAQ.curso || "");
+  var m = { entregado: "Respondió todas las preguntas.", tiempo: "Se acabó el tiempo del examen.", cierre: "El examen llegó a su hora de cierre." }[ST.fin_motivo] || "";
+  texto($("z-motivo"), m);
+  $("codigo").value = ST.codigo || "";
+  var url = (EX && EX.entrega_url) || PAQ.entrega_url, tarea = (EX && EX.entrega_nombre) || PAQ.entrega_nombre;
+  if (tarea) texto($("z-tarea"), "«" + tarea + "»");
+  if (url && /^https:\/\//.test(url)) { $("z-a").href = url; $("z-enlace").hidden = false; }
+  ver("v-fin");
+}
+
+$("b-copiar").onclick = function () {
+  var t = $("codigo"), ok = false;
+  t.focus(); t.select(); t.setSelectionRange(0, t.value.length);
+  try { ok = document.execCommand("copy"); } catch (e) {}
+  if (ok) { texto($("z-copiado"), "Copiado. Ahora péguelo en la tarea del aula."); return; }
+  if (navigator.clipboard) navigator.clipboard.writeText(t.value).then(function () { texto($("z-copiado"), "Copiado. Ahora péguelo en la tarea del aula."); }, function () { texto($("z-copiado"), "No se pudo copiar solo: mantenga el dedo sobre el código, elija Seleccionar todo y Copiar."); });
+  else texto($("z-copiado"), "No se pudo copiar solo: mantenga el dedo sobre el código, elija Seleccionar todo y Copiar.");
+};
+$("b-bajar").onclick = function () {
+  var a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([$("codigo").value + "\n"], { type: "text/plain" }));
+  a.download = "codigo_" + (ST.ex || "examen") + "_" + ST.intento.slice(0, 6) + ".txt";
+  document.body.appendChild(a); a.click(); setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+};
+
+$("f-clave").onsubmit = async function (ev) {
+  ev.preventDefault(); texto($("e-clave"), "");
+  var v = $("clave").value; if (!v.trim()) { texto($("e-clave"), "Escriba la clave."); return; }
+  $("b-abrir").disabled = true; texto($("b-abrir"), "Abriendo…");
+  await abrir(v, false);
+  $("b-abrir").disabled = false; texto($("b-abrir"), "Abrir el examen");
+};
+$("b-empezar").onclick = function () {
+  if (EX.cierre && ahora() > EX.cierre) { texto($("p-datos"), "El examen ya cerró."); return; }
+  try { var d = document.documentElement; if (d.requestFullscreen) d.requestFullscreen().catch(function () {}); } catch (e) {}
+  crearIntento(); mostrarPregunta();
+};
+
+if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(function () {});
+if (!window.crypto || !crypto.subtle) { document.body.innerHTML = '<div class="wrap"><h1>Este navegador no puede abrir el examen</h1><p>Ábralo en Chrome, Safari o Edge actualizados.</p></div>'; }
+else cargar();
+</script>
+</body>
+</html>

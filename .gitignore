@@ -1,0 +1,4 @@
+_local/
+*.pem
+clave*.txt
+clave_respuestas*.json
